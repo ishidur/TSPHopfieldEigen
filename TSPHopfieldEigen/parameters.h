@@ -1,15 +1,12 @@
 #pragma once
 
-
 #define RECALL_TIME 10000
-#define DELTA_T 0.001
-#define NOISE 0.01
+#define DELTA_T 0.01
+#define	NOISE 0.0000000001
 #define U0 0.02
-#define A 500.0
-#define B 500.0
-#define C 200.0
-#define D 500.0
-#define N 15.0
+#define A 2.0
+#define B 2.0
+#define D 1.0
 #include <vector>
 
 const std::vector<std::vector<double>> cities = {

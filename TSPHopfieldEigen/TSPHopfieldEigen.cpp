@@ -11,32 +11,27 @@ using namespace Eigen;
 
 Data data;
 
-auto sigm = [](const double input)
+auto relu = [](const double input)
 {
-	return 1.0 / (1 + exp(-input / U0));
+	if (input + 0.5 > 1.0)
+	{
+		return 1.0;
+	}
+	else if (input + 0.5 < 0.0)
+	{
+		return 0.0;
+	}
+	return input + 0.5;
 };
 
 VectorXd sigmoid(VectorXd inputs)
 {
-	return inputs.unaryExpr(sigm);
+	return inputs.unaryExpr(relu);
 }
 
-
-auto inverseActFunc = [](const double input)
+VectorXd calcDeltaU(const VectorXd& state)
 {
-	return 0.5 * U0 * log((1.0 + input) / (1.0 - input));
-};
-
-VectorXd inverseActivationFunc(const VectorXd& inputs)
-{
-	return inputs.unaryExpr(inverseActFunc);
-}
-
-
-VectorXd calcDeltaU(const VectorXd& state, const VectorXd& innerVal)
-{
-	const double tau = 1.0;
-	VectorXd delta = (-innerVal / tau + data.weight_mtrx * state + data.biases) * DELTA_T;
+	VectorXd delta = (data.weight_mtrx * state + data.biases) * DELTA_T;
 	return delta;
 }
 
@@ -57,17 +52,15 @@ void outputState(const VectorXd& state)
 void run()
 {
 	int n = cities.size() * cities.size();
-	VectorXd result = NOISE * VectorXd::Random(n) + VectorXd::Constant(n, 0.5);
-	VectorXd innerVal = inverseActivationFunc(result);
-	//	VectorXd innerVal = NOISE * VectorXd::Random(n);
-	//	VectorXd result = sigmoid(innerVal);
+	VectorXd innerVal = NOISE * VectorXd::Random(n);
+	VectorXd result = sigmoid(innerVal);
 	float progress = 0.0;
 	const double step = 1.0 / (RECALL_TIME - 1.0);
 
 	for (int i = 0; i < RECALL_TIME; ++i)
 	{
 		//update innerVal
-		innerVal += calcDeltaU(result, innerVal);
+		innerVal += calcDeltaU(result);
 		//update state from innerVal
 		result = sigmoid(innerVal);
 		int barWidth = 70;
