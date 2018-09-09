@@ -5,11 +5,13 @@
 
 #pragma once
 
-#include "targetver.h"
 
 #include <stdio.h>
+#ifdef __APPLE__
+#elif defined _WIN32 || defined _WIN64
+#include "targetver.h"
 #include <tchar.h>
-
+#endif
 
 #include "Eigen/Core"
 
