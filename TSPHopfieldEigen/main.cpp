@@ -13,7 +13,7 @@ Data data;
 
 auto sigm = [](const double input)
 {
-	return 1.0 / (1 + exp(-input));
+	return 1.0 / (1 + exp(-input / U0));
 };
 
 VectorXd sigmoid(VectorXd inputs)
@@ -57,15 +57,13 @@ void outputState(const VectorXd& state)
 void run()
 {
 	int n = cities.size() * cities.size();
-	//	VectorXd result = NOISE * VectorXd::Random(n) + VectorXd::Constant(n, 0.5);
-	//	VectorXd innerVal = inverseActivationFunc(result);
-	VectorXd innerVal = NOISE * VectorXd::Random(n);
-	VectorXd result = sigmoid(innerVal);
+	VectorXd result = NOISE * VectorXd::Random(n) + VectorXd::Constant(n, 0.5);
+	VectorXd innerVal = inverseActivationFunc(result);
+	//	VectorXd innerVal = NOISE * VectorXd::Random(n);
+	//	VectorXd result = sigmoid(innerVal);
 	float progress = 0.0;
 	const double step = 1.0 / (RECALL_TIME - 1.0);
 
-	outputState(result);
-	std::cout << std::endl;
 	for (int i = 0; i < RECALL_TIME; ++i)
 	{
 		//update innerVal
@@ -83,11 +81,6 @@ void run()
 		}
 		std::cout << "] " << int(progress * 100.0) << " %\r";
 		std::cout.flush();
-		if (i == RECALL_TIME / 2)
-		{
-			std::cout << std::endl;
-			outputState(result);
-		}
 		progress += step;
 	}
 	std::cout << std::endl;
