@@ -46,7 +46,7 @@ void outputState(const VectorXd& state)
 	{
 		for (int col = 0; col < cities.size(); ++col)
 		{
-			int n = row * cities.size() + col;
+			int n = static_cast<int>(row * cities.size() + col);
 			std::cout << state[n];
 			std::cout << ",";
 		}
